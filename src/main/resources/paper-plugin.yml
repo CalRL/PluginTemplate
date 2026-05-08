@@ -1,0 +1,10 @@
+name: PluginTemplate
+prefix: ECONOMY
+version: '${version}'
+
+main: me.calrl.pluginTemplate.PluginTemplate
+api-version: '26.1.2'
+load: POSTWORLD
+
+authors: [ Cal ]
+website: cal.ceo
