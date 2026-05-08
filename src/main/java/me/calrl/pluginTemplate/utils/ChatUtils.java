@@ -48,9 +48,10 @@ public class ChatUtils {
     }
 
     public static String processMessage(@NotNull Player player, String message) {
-        if(Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-            message = PlaceholderAPI.setPlaceholders(player, message);
-        }
+//        uncomment this if you use placeholder api!
+//        if(Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+//             message = PlaceholderAPI.setPlaceholders(player, message);
+//        }
         message = translateHexColorCodes(message);
         return message;
     }
