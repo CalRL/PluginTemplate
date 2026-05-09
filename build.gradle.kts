@@ -16,13 +16,6 @@ tasks.withType<Checkstyle> {
     maxWarnings = 0
 }
 
-tasks.withType(Checkstyle).configureEach {
-    reports {
-        xml.required = true
-        html.required = true
-    }
-}
-
 repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
