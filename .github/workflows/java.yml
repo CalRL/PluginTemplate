@@ -17,32 +17,41 @@ jobs:
         with:
           distribution: corretto
           java-version: 25
+          cache: gradle
 
       - name: Grant execute permission
         run: chmod +x gradlew
 
+      # Run build but do NOT stop workflow on failure
       - name: Build project + run Checkstyle
+        id: build
         run: ./gradlew clean build checkstyleMain checkstyleTest
+        continue-on-error: true
 
-      # Upload Checkstyle HTML report
+      # Upload Checkstyle HTML/XML reports (always)
       - name: Upload Checkstyle report
-        uses: actions/upload-artifact@v4
         if: always()
+        uses: actions/upload-artifact@v4
         with:
           name: checkstyle-report
-          path: |
-            build/reports/checkstyle/
+          path: build/reports/checkstyle/
 
-      # Upload JAR
+      # Publish Checkstyle annotations in PR
+      - name: Publish Checkstyle results
+        if: always()
+        uses: jwgmeligmeyling/checkstyle-github-action@v1
+        with:
+          path: build/reports/checkstyle/*.xml
+
+      # Upload JAR only if build succeeded
       - name: Upload JAR artifact
-        uses: actions/upload-artifact@v4
         if: success()
+        uses: actions/upload-artifact@v4
         with:
           name: app-jar
           path: build/libs/*.jar
 
-      # Publish Checkstyle results
-      - name: Publish Checkstyle results
-        uses: jwgmeligmeyling/checkstyle-github-action@master
-        with:
-          path: build/reports/checkstyle/main.xml
+      # Fail the job AFTER publishing results
+      - name: Fail build if Gradle failed
+        if: steps.build.outcome != 'success'
+        run: exit 1
