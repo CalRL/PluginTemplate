@@ -1,6 +1,26 @@
 plugins {
+    id("checkstyle")
     id("java-library")
     id("xyz.jpenilla.run-paper") version "3.0.2"
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(25)
+}
+
+checkstyle {
+    toolVersion = "10.21.0"
+}
+
+tasks.withType<Checkstyle> {
+    maxWarnings = 0
+}
+
+tasks.withType(Checkstyle).configureEach {
+    reports {
+        xml.required = true
+        html.required = true
+    }
 }
 
 repositories {
@@ -10,10 +30,6 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:26.1.2.build.+")
-}
-
-java {
-    toolchain.languageVersion = JavaLanguageVersion.of(25)
 }
 
 tasks {
