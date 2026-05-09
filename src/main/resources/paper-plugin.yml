@@ -2,7 +2,7 @@ name: PluginTemplate
 prefix: ECONOMY
 version: '${version}'
 
-main: me.calrl.pluginTemplate.PluginTemplate
+main: me.calrl.plugintemplate.PluginTemplate
 api-version: '26.1.2'
 load: POSTWORLD
 
