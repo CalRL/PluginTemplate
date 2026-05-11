@@ -1,0 +1,62 @@
+name: Java
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: corretto
+          java-version: 25
+          cache: gradle
+
+      - name: Grant execute permission
+        run: chmod +x gradlew
+
+      # Run build but do NOT stop workflow on failure
+      - name: Build project + run Checkstyle
+        id: build
+        run: ./gradlew clean build checkstyleMain checkstyleTest
+        continue-on-error: true
+
+      # Upload Checkstyle HTML/XML reports (always)
+      - name: Upload Checkstyle report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: checkstyle-report
+          path: build/reports/checkstyle/
+
+      # Publish Checkstyle annotations in PR
+      - name: Publish Checkstyle results
+        if: always()
+        uses: jwgmeligmeyling/checkstyle-github-action@v1
+        with:
+          path: build/reports/checkstyle/*.xml
+
+      # Upload JAR only if build succeeded
+      - name: Upload JAR artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-jar
+          path: build/libs/*.jar
+
+      # Fail the job AFTER publishing results
+      - name: Fail build if Gradle failed
+        if: steps.build.outcome != 'success'
+        run: exit 1
